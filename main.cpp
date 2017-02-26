@@ -3,7 +3,34 @@
 #include <cstdlib> //for random number functions rand
 #include <ctime> //header file needed to use time
 #include <iomanip>
+#include <thread> //std::this_thread::sleep_for
+#include <chrono> // std::chrono::seconds
+#include <windows.h>
+
 using namespace std;
+
+bool EnableVTMode()
+{
+	// Set output mode to handle virtual terminal sequences
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hOut == INVALID_HANDLE_VALUE)
+	{
+		return false;
+	}
+
+	DWORD dwMode = 0;
+	if (!GetConsoleMode(hOut, &dwMode))
+	{
+		return false;
+	}
+
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	if (!SetConsoleMode(hOut, dwMode))
+	{
+		return false;
+	}
+	return true;
+}
 
 int main()
 {
@@ -208,6 +235,113 @@ const string FISH_12_ART = " o\n"
 "      `  \\    ``     /\n"
 "          \\_________/\n";
 
+
+const string FISHING_GAME_ART_1 = "\n"
+"        __   _         _     __    __   _   _ _   _ \n"
+"       |__ ||_  |_| | | | | | _   | _  |_| | | | |_\n"
+"       |   | _| | | | | |_| |__|  |__| | | | | | |_\n"
+"\n"
+"\n"
+"\n"
+"                                                   ---.___.--- \n"
+"                                     /\\          /             \\\n "
+"                                   / o\\      __|_______________|_\n"
+"                                  /    o\\        |             | \n"
+"                                 /      o\\       |  O          |\n"
+"                               /         o\\       \\           /\n"
+"                              /           o\\       |----------\\ \n"
+"			    /              o\\_     | /        |\n"
+"                           /                \\ \\    |/  /   /  |\n"
+"                         /                 O,\\ \\   |  /   /   |\n"
+"			/  ___________________\\_\\__|_/___/____|___________\n"
+"		      /    \\______________________________________________\n"
+"		     /	     \\____________________________________________\n"
+"	            /	       \\__________________________________________\n"
+"	          /              \\________________________________________\n"
+"                 O                  \\_____________________________________\n"
+"/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,/`.,\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"TOTAL FISH: \n"
+"SCORE: \n";
+
+const string FISHING_GAME_ART_2 = "\n"
+"        __   _         _     __    __   _   _ _   _ \n"
+"       |__ ||_  |_| | | | | | _   | _  |_| | | | |_\n"
+"       |   | _| | | | | |_| |__|  |__| | | | | | |_\n"
+"\n"	   
+"\n"	   
+"\n"	   
+"                                                   ---.___.--- \n"
+"                                     /\\          /             \\\n"
+"                                   /  o\\      __|_______________|_\n"
+"                                 /     o\\        |             | \n"
+"                                /       o\\       |  O          |\n"
+"                              /          o\\       \\           /\n"
+"                             /            o\\       |----------\\\n"
+"		           /       	   o\\_     | /        |\n"
+"                          /                 \\ \\    |/  /   /  | \n"
+"                        /                  O,\\ \\   |  /   /   |\n"
+"                       /   ___________________\\_\\__|_/___/____|___________\n"
+"                     /	   \\______________________________________________\n"
+"                    /        \\____________________________________________\n"
+"                   /           \\__________________________________________\n"
+"                 /               \\________________________________________\n"
+"                O                   \\_____________________________________\n"
+",.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\,.`\\\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n" 
+"\n"
+"TOTAL FISH: \n"
+"SCORE: ";
+
+const string FISHING_GAME_ART_3 = "\n"
+"        __   _         _     __    __   _   _ _   _ \n"
+"       |__ ||_  |_| | | | | | _   | _  |_| | | | |_\n"
+"       |   | _| | | | | |_| |__|  |__| | | | | | |_\n"
+"	   \n"
+"                                                   ---.___.---        |\n"
+"                             /`\\,                /             \\      |\n"
+"                           /    o\\,           __|_______________|_    |\n"
+"                          /       o\\,            |             | \n"
+"                        /           o\\,          |  O          |      *\n"
+"                       /              o\\,         \\           /\n"
+"                     /                  o\\,        |----------\\\n"
+"                    /                    o\\_       |/         |\n"
+"                  /                       \\ \\ _____|_/        | \n"
+"                 /                       O,\\Q/________/       |\n"
+"                `                                  |          |\n"
+"               `                                   |          |\n"
+"               `           ________________________|__________|___________\n"
+"               |           \\______________________________________________\n"
+"               |             \\____________________________________________\n"
+"               |               \\__________________________________________\n"
+"               |                 \\________________________________________\n"
+"               |                    \\_____________________________________\n"
+"../`;../`;../`;../`;../`;../`;../`;../`;../`;../`;../`;../`;../`;../`;../`;..\n" 
+"               |   o\n"
+"               X    o\n"
+"              XXX  o \n"
+"               X\n"
+"              X X \n"
+"\n"
+"TOTAL FISH: \n"
+"SCORE: \n";
+
+bool success = EnableVTMode();
+if(!success)
+{
+	printf("Unable to enter VT processing mode. Quitting.\n");
+	return -1;
+}
+
 //Variables to store total values of fish and statistics from turns
 char condition = ' '; //test variable for the while loop condtion
 
@@ -219,13 +353,47 @@ randomNum = rand() % 100 + 1;
 //Counters to keep track of number of total number of turns
 int totalScore = 0;
 
+cout << "\x1b]2;Fishing Game\x07";
 
 //INTRODUCTION TO THE GAME
 cout << GAME_TITLE << endl;
 cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl << endl;
 cout << " Welcome to the FISHING GAME!\n\n Type in a character and press ENTER to begin fishing.\n When you want to quit, type \'Q\'." << endl;
 cout << "\n Be careful of SHARKS, they are dangerous!" << endl << endl;
-cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+
+condition = cin.get();
+//cin.ignore(100, '\n');
+condition = toupper(condition);
+
+if (condition == 'Q') {
+	return 0;
+}
+else {
+	cout << "\x1b[2J\x1b[H";
+}
+
+
+while(1) {
+	cout << FISHING_GAME_ART_1 << endl;
+	this_thread::sleep_for(chrono::seconds(2));
+	cout << "\x1b[2J\x1b[H";
+	cout << FISHING_GAME_ART_2 << endl;
+	this_thread::sleep_for(chrono::seconds(2));
+	cout << "\x1b[2J\x1b[H";
+}
+
+/*
+//Variables to store total values of fish and statistics from turns
+char condition = ' '; //test variable for the while loop condtion
+
+srand(time(0));
+
+int randomNum;
+randomNum = rand() % 100 + 1;
+
+//Counters to keep track of number of total number of turns
+int totalScore = 0;
 
 condition = cin.get();
 cin.ignore(100, '\n');
@@ -366,7 +534,7 @@ while (condition != 'Q')
 
 
 
-
+*/
 cout << endl;
 
 return 0;
